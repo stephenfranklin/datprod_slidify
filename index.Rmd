@@ -41,7 +41,7 @@ sidebarPanel(
 ---
 
 ### Code excerpt from server.R
-The code snippet run here shows the prediction table of species  of irises. An classification tree (`rpart`) was trained (using `caret`) on the iris dataset and the test data was then predicted.
+The code snippet run here shows the prediction table of species  of irises. A classification tree (`rpart`) was trained (using `caret`) on the iris dataset and the test data was then predicted.
 
 ```r
     ### A reactive expression executes when the inputs change.
