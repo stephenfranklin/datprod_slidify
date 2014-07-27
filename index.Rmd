@@ -1,0 +1,93 @@
+---
+title       : "Comparing Machine Learning Algorithms"
+subtitle    : 
+author      : Stephen Franklin 
+job         : Developing Data Products, Coursera, 27-07-14
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax, quiz, bootstrap]
+mode        : standalone # selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+
+---
+
+### Comparing Machine Learning Algorithms   
+
+This interactive Shiny application compares two machine learning algorithms to predict species of irises (from the iris dataset).
+The data is divided into two sets, one for training the algorithm and the other for testing it. The algorithm is run reactively upon any change in the two user controls.
+
+<img src="fig/shiny1.png" alt="shiny screenshot" style="width: 600px;"/>
+
+---
+
+### Code excerpt from ui.R
+```r
+sidebarPanel(
+            sliderInput("train_percent",
+                        "Training Percentage:",
+                        min = 0.10, max = 0.90, 
+                        value = 0.20, step = 0.10),
+            br(),
+            radioButtons("method", "Model method:",
+                         c("CART" = "rpart",
+                           "Random Forest" = "rf")
+            )
+)
+```
+
+---
+
+### Code excerpt from server.R
+```r
+    ### Reactive expression called whenever inputs change.
+    outs <- reactive({interact(input$train_percent, input$method)})
+    output$table.out <- renderTable({outs()$out.table})
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(caret); library(rpart)
+data(iris)
+train_percent<-0.30
+method<-"rpart"
+
+## Create Iris Training And Test Sets with given train percentage
+partitionData <- function(train_percent){
+    data(iris)
+    set.seed(42)
+    inTrain <- createDataPartition(y=iris$Species, p=train_percent, list=FALSE)
+    training <- iris[inTrain,]
+    testing <- iris[-inTrain,]
+    #dim(training); dim(testing)
+    invisible( list(training=training, testing=testing) )
+}
+
+## Partition, Train, Output tables and plots
+interact <- function(train_percent, method){
+    data <- partitionData(train_percent) ## list of training, testing.
+    ## Train Model Fit
+    set.seed(42)
+    fit <- train(Species ~ ., method=method, data=data$training)
+    set.seed(42)
+    pred <- predict(fit,newdata=data$testing)
+    predRight <- pred==data$testing$Species
+    
+    ## Output
+    out.table <- table(pred,data$testing$Species)
+    out.table=out.table
+}
+
+    ### A reactive expression executes when the inputs change.
+    outs <- interact(train_percent, method)
+    outs
+```
+
+The `interact()` function calls other functions which train and fit the model, and then predict and plot the test data.
+
+Here's the [complete code](https://github.com/stephenfranklin/datprod_shiny). 
+
+---
+
+### Documentation
+
+<img src="fig/shiny2.png" alt="shiny screenshot" style="width: 600px;"/>
