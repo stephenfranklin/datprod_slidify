@@ -14,7 +14,7 @@ knit        : slidify::knit2slides
 
 ### Comparing Machine Learning Algorithms   
 
-This interactive Shiny application compares two machine learning algorithms to predict species of irises (from the iris dataset).
+[This interactive Shiny application](http://stephenfranklin.shinyapps.io/datprod_shiny/) compares two machine learning algorithms to predict species of irises (from the iris dataset).
 The data is divided into two sets, one for training the algorithm and the other for testing it. The algorithm is run reactively upon any change in the two user controls.
 
 <img src="fig/shiny1.png" alt="shiny screenshot" style="width: 600px;"/>
@@ -22,6 +22,8 @@ The data is divided into two sets, one for training the algorithm and the other 
 ---
 
 ### Code excerpt from ui.R
+This code shows how to implement user interactivity.
+
 ```r
 sidebarPanel(
             sliderInput("train_percent",
@@ -39,8 +41,10 @@ sidebarPanel(
 ---
 
 ### Code excerpt from server.R
+The code snippet run here shows the prediction table of species  of irises. An classification tree (`rpart`) was trained (using `caret`) on the iris dataset and the test data was then predicted.
+
 ```r
-    ### Reactive expression called whenever inputs change.
+    ### A reactive expression executes when the inputs change.
     outs <- reactive({interact(input$train_percent, input$method)})
     output$table.out <- renderTable({outs()$out.table})
 ```
@@ -82,12 +86,17 @@ interact <- function(train_percent, method){
     outs
 ```
 
-The `interact()` function calls other functions which train and fit the model, and then predict and plot the test data.
+The `interact()` function actually calls several other functions which ultimately output the table above.
+(The entire code won't fit on this slide, but it was processed by Rstudio when the slidify document was knitted!)
 
 Here's the [complete code](https://github.com/stephenfranklin/datprod_shiny). 
 
 ---
 
-### Documentation
+### Documentation and Expansion
+
+More machine learning algorithms, more graphical outputs (such as tree diagrams and class centers), and even more datasets can be easily added!
 
 <img src="fig/shiny2.png" alt="shiny screenshot" style="width: 600px;"/>
+
+http://stephenfranklin.shinyapps.io/datprod_shiny/
